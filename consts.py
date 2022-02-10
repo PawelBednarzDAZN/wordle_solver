@@ -1,0 +1,3 @@
+WORD_SIZE = 5
+YELLOW = 0
+GREEN = 1
