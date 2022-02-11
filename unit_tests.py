@@ -1,7 +1,7 @@
 import unittest
 
-from next_move import matches_state
-from consts import GREEN, YELLOW
+from next_move import matches_state, get_inclusions, get_letter_scores, get_scoring_keys, get_word_score, next_move
+from consts import GREEN, YELLOW, WORD_SIZE
 
 class TestNextMove(unittest.TestCase):
 
@@ -25,7 +25,69 @@ class TestNextMove(unittest.TestCase):
         self.assertFalse(matches_state('krata', [(0, 'o', YELLOW)]))
 
     def test_yellow_missing_when_green_fits(self):
-            self.assertFalse(matches_state('krata', [(2, 'a', GREEN), (0, 'w', YELLOW)]))
+        self.assertFalse(matches_state('krata', [(2, 'a', GREEN), (0, 'w', YELLOW)]))
+
+    def test_exclude_green(self):
+        self.assertEqual(get_inclusions([(0, 'w', GREEN)]), [1, 2, 3, 4])
+
+    def test_dont_exclude_yellow(self):
+        self.assertEqual(get_inclusions([(0, 'w', YELLOW) ]), range(WORD_SIZE))
+
+    def test_inclusions_in_mixed_setup(self):
+        self.assertEqual(get_inclusions([(0, 'w', GREEN), (1, 'r', YELLOW), (2, 'e', GREEN), (4, 'a', GREEN)]), [1, 3])
+
+    def test_scoring_keys(self):
+        self.assertEqual(get_scoring_keys('kreta', [1, 3]), ['r0', 't0'])
+
+    def test_scoring_keys(self):
+        self.assertEqual(get_scoring_keys('krata', [2, 4]), ['a0', 'a1'])
+
+    def test_scoring_keys(self):
+        self.assertItemsEqual(get_scoring_keys('agata', [0, 2, 3, 4]), ['a0', 'a1', 't0', 'a2'])
+
+    def test_lscores_full_inclusions_singles(self):
+        result = get_letter_scores(['words'], [0, 1, 2, 3, 4])
+        self.assertEqual(result['w0'], 1)
+        self.assertEqual(result['o0'], 1)
+        self.assertEqual(result['r0'], 1)
+        self.assertEqual(result['d0'], 1)
+        self.assertEqual(result['s0'], 1)
+
+    def test_lscores_full_inclusions_repetitions(self):
+        result = get_letter_scores(['agata'], [0, 1, 2, 3, 4])
+        self.assertEqual(result['a0'], 1)
+        self.assertEqual(result['a1'], 1)
+        self.assertEqual(result['a2'], 1)
+        self.assertEqual(result['g0'], 1)
+        self.assertEqual(result['t0'], 1)
+
+    def test_lscores_full_inclusions_two_words(self):
+        result = get_letter_scores(['words', 'grama'], [0, 1, 2, 3, 4])
+        self.assertEqual(result['w0'], 1)
+        self.assertEqual(result['r0'], 2)
+        self.assertEqual(result['a0'], 1)
+        self.assertEqual(result['a1'], 1)
+
+    def test_lscores_partial_inclusions(self):
+        result = get_letter_scores(['agata'], [0, 1, 2, 3])
+        self.assertEqual(result['a0'], 1)
+        self.assertEqual(result['a1'], 1)
+        self.assertFalse('a2' in result)
+
+    def test_wscore_full_inclusions(self):
+        word = 'krata'
+        inclusions = range(WORD_SIZE)
+        lscores = get_letter_scores([word], inclusions)
+        self.assertEqual(get_word_score(word, inclusions, lscores), WORD_SIZE)
+
+    def test_wscore_partial_inclusions(self):
+        word = 'krata'
+        inclusions = range(1, WORD_SIZE)
+        lscores = get_letter_scores([word], inclusions)
+        self.assertEqual(get_word_score(word, inclusions, lscores), WORD_SIZE - 1)
+
+    def test_moves_ok_in_simple_case(self):
+        self.assertEqual(next_move(['steki', 'stary', 'tarta'], []), 'stary')
 
 if __name__ == '__main__':
     unittest.main()
