@@ -1,7 +1,9 @@
+# coding: utf-8
+
 import unittest
 
-from next_move import matches_state, get_inclusions, get_letter_scores, get_scoring_keys, get_word_score, next_move, solved
-from consts import GREEN, YELLOW, GREY, RED, WORD_SIZE, NO_POSITION
+from next_move import *
+from consts import *
 
 class TestNextMove(unittest.TestCase):
 
@@ -103,6 +105,22 @@ class TestNextMove(unittest.TestCase):
 
     def test_solved_fails_incomplete_state_with_yellow(self):
         self.assertFalse(solved([(0, 'k', GREEN), (1, 'r', GREEN), (2, 'a', GREEN), (3, 't', GREEN), (4, 'a', YELLOW)]))
+
+    def test_state_delta_adding_green(self):
+        self.assertEqual(state_delta('karta', u'kubeł', []), [(0, 'k', GREEN)])
+
+    def test_state_delta_adding_yellow(self):
+        self.assertEqual(state_delta('karty', 'rebus', []), [(0, 'r', YELLOW)])
+
+    def test_state_delta_adding_greens_and_yellows(self):
+        self.assertEqual(set(state_delta('karty', 'katar', [])), set([(0, 'k', GREEN), (1, 'a', GREEN), (2, 't', YELLOW), (4, 'r', YELLOW)]))
+
+    def test_state_delta_not_adding_too_many_yellows(self):
+        self.assertEqual(set(state_delta('abaad', 'aaaea', [])), set([(0, 'a', GREEN), (2, 'a', GREEN), (1, 'a', YELLOW)]))
+
+    # add one letter already matched and see if it propagates
+    def test_state_delta_respects_old_state(self):
+        self.assertEqual(state_delta('karta', u'banał', [(1, 'a', GREEN)]), [(3, 'a', YELLOW)])
 
 if __name__ == '__main__':
     unittest.main()

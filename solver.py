@@ -1,5 +1,6 @@
 #!/usr/bin/python
-# -*- coding: iso-8859-2 -*-
+# coding: utf-8
+
 from next_move import next_move, extend_state, solved
 from consts import ROUNDS
 
