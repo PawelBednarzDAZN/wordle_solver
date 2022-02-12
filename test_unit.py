@@ -1,7 +1,7 @@
 import unittest
 
-from next_move import matches_state, get_inclusions, get_letter_scores, get_scoring_keys, get_word_score, next_move
-from consts import GREEN, YELLOW, WORD_SIZE
+from next_move import matches_state, get_inclusions, get_letter_scores, get_scoring_keys, get_word_score, next_move, solved
+from consts import GREEN, YELLOW, GREY, RED, WORD_SIZE, NO_POSITION
 
 class TestNextMove(unittest.TestCase):
 
@@ -26,6 +26,12 @@ class TestNextMove(unittest.TestCase):
 
     def test_yellow_missing_when_green_fits(self):
         self.assertFalse(matches_state('krata', [(2, 'a', GREEN), (0, 'w', YELLOW)]))
+
+    def test_gray_constraint_can_exclude_word(self):
+        self.assertFalse(matches_state('krata', [(NO_POSITION, 'k', GREY)]))
+
+    def test_red_constraint_can_exclude_word(self):
+        self.assertFalse(matches_state('kraty', [(NO_POSITION, 'a', RED)]))
 
     def test_exclude_green(self):
         self.assertEqual(get_inclusions([(0, 'w', GREEN)]), [1, 2, 3, 4])
@@ -88,6 +94,15 @@ class TestNextMove(unittest.TestCase):
 
     def test_moves_ok_in_simple_case(self):
         self.assertEqual(next_move(['steki', 'stary', 'tarta'], []), 'stary')
+
+    def test_solved_okeys_complete_state(self):
+        self.assertTrue(solved([(0, 'k', GREEN), (1, 'r', GREEN), (2, 'a', GREEN), (3, 't', GREEN), (4, 'a', GREEN)]))
+
+    def test_solved_fails_incomplete_state(self):
+        self.assertFalse(solved([(0, 'k', GREEN), (1, 'r', GREEN), (2, 'a', GREEN), (3, 't', GREEN)]))
+
+    def test_solved_fails_incomplete_state_with_yellow(self):
+        self.assertFalse(solved([(0, 'k', GREEN), (1, 'r', GREEN), (2, 'a', GREEN), (3, 't', GREEN), (4, 'a', YELLOW)]))
 
 if __name__ == '__main__':
     unittest.main()

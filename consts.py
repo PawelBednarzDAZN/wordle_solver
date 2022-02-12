@@ -1,3 +1,7 @@
 WORD_SIZE = 5
-YELLOW = 0
-GREEN = 1
+ROUNDS = 6
+YELLOW = 'y'
+GREEN = 'g'
+GREY = 'grey'
+RED = 'r'
+NO_POSITION = -1
