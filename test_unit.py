@@ -1,8 +1,8 @@
 # coding: utf-8
-
 import unittest
 
-from next_move import *
+from slf_heuristic import *
+from solver_utils import *
 from consts import *
 
 class TestNextMove(unittest.TestCase):

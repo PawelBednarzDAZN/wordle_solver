@@ -1,7 +1,6 @@
-#!/usr/bin/python
 # coding: utf-8
-
-from next_move import next_move, extend_state, solved
+from slf_heuristic import next_move
+from solver_utils import extend_state, solved
 from consts import ROUNDS
 
 db = map(lambda s: s.strip(), open('db/pl_pl.txt').readlines())
