@@ -95,7 +95,7 @@ class TestNextMove(unittest.TestCase):
         self.assertEqual(get_word_score(word, inclusions, lscores), WORD_SIZE - 1)
 
     def test_moves_ok_in_simple_case(self):
-        self.assertEqual(next_move(['steki', 'stary', 'tarta'], []), 'stary')
+        self.assertEqual(next_move(['steki', 'stary', 'tarta'], [])[0], 'stary')
 
     def test_solved_okeys_complete_state(self):
         self.assertTrue(solved([(0, 'k', GREEN), (1, 'r', GREEN), (2, 'a', GREEN), (3, 't', GREEN), (4, 'a', GREEN)]))
@@ -107,20 +107,16 @@ class TestNextMove(unittest.TestCase):
         self.assertFalse(solved([(0, 'k', GREEN), (1, 'r', GREEN), (2, 'a', GREEN), (3, 't', GREEN), (4, 'a', YELLOW)]))
 
     def test_state_delta_adding_green(self):
-        self.assertEqual(state_delta('karta', u'kubeł', []), [(0, 'k', GREEN)])
+        self.assertTrue((0, 'k', GREEN) in state_delta('karta', u'kubeł'))
 
     def test_state_delta_adding_yellow(self):
-        self.assertEqual(state_delta('karty', 'rebus', []), [(0, 'r', YELLOW)])
+        self.assertTrue((0, 'r', YELLOW) in state_delta('karty', 'rebus'))
 
     def test_state_delta_adding_greens_and_yellows(self):
-        self.assertEqual(set(state_delta('karty', 'katar', [])), set([(0, 'k', GREEN), (1, 'a', GREEN), (2, 't', YELLOW), (4, 'r', YELLOW)]))
+        self.assertEqual(set(state_delta('karty', 'katar')), set([(0, 'k', GREEN), (1, 'a', GREEN), (2, 't', YELLOW), (4, 'r', YELLOW), (NO_POSITION, 'a', GREY)]))
 
-    def test_state_delta_not_adding_too_many_yellows(self):
-        self.assertEqual(set(state_delta('abaad', 'aaaea', [])), set([(0, 'a', GREEN), (2, 'a', GREEN), (1, 'a', YELLOW)]))
-
-    # add one letter already matched and see if it propagates
-    def test_state_delta_respects_old_state(self):
-        self.assertEqual(state_delta('karta', u'banał', [(1, 'a', GREEN)]), [(3, 'a', YELLOW)])
+    def test_state_delta_adding_extra_yellow(self):
+        self.assertEqual(set(state_delta('abaad', 'aaaea')), set([(0, 'a', GREEN), (2, 'a', GREEN), (1, 'a', YELLOW), (4, 'a', YELLOW), (NO_POSITION, 'e', GREY)]))
 
 if __name__ == '__main__':
     unittest.main()

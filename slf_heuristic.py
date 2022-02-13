@@ -6,20 +6,20 @@ from collections import defaultdict
 
 # we assume non-nonsense states only - no validation on state length, position repetitions etc for performance sake
 def matches_state(word, state):
-    partials = []
-    no_greens = list(word)
+    non_green_letters = [l for (p, l) in enumerate(word) if (p, l, GREEN) not in state]
     for (position, letter, color) in state:
         if color == GREEN:
             if word[position] != letter:
                 return False
-        elif color == YELLOW:
-            if not letter in word[:position] + word[position + 1:]:
-                return False
+        elif (color == YELLOW or color == SOFT_YELLOW) and word[position] == letter:
+            return False
+        elif color == YELLOW and letter not in non_green_letters:
+            return False
         elif color == GREY:
-            if letter in word:
+            if letter in non_green_letters:
                 return False
         elif color == RED:
-            if word.count(letter) < 2:
+            if non_green_letters.count(letter) < 2:
                 return False
     return True
 
@@ -52,8 +52,8 @@ def next_move(words, state):
     words = filter(lambda word: matches_state(word, state), words)
     if len(words) == 0:
         print('No words in db satisfy these criteria')
-        return ''
+        return '', []
     inclusions = get_inclusions(state)
     letter_scores = get_letter_scores(words, inclusions)
     word_scores = [(word, get_word_score(word, inclusions, letter_scores)) for word in words]
-    return max(word_scores, key = lambda (w, s): s)[0]
+    return max(word_scores, key = lambda (w, s): s)[0], words
