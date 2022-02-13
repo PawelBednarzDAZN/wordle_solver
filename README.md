@@ -3,6 +3,8 @@ Simple heuristic assigning weight to individual letters in order to guide respon
 
 ## Results
 
+[Db](db/pl_pl.txt) size: **6090** words
+
 Mean number of moves required to solve the problem: **4.041**
 
 Number of cases when no solution was found in 6 moves: **101 (1.6585%)**
