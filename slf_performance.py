@@ -2,7 +2,7 @@ from slf_heuristic import next_move
 from solver_utils import *
 from db import fetch
 from colors import magenta, color
-from consts import LOADS
+from consts import LOADS, MAX_ROUNDS
 
 def measure_performance(db_file, output_file, test_set_size=LOADS, verbose=False, progress_steps=1):
     words = fetch(db_file)
@@ -20,7 +20,7 @@ def measure_performance(db_file, output_file, test_set_size=LOADS, verbose=False
             suggestion, active_words = next_move(active_words, state)
             if suggestion == '':
                 print 'no word satisfied the conditions for', word
-                round = 20
+                round = MAX_ROUNDS
                 break
             delta = state_delta(word, suggestion)
             state = extend_state(state, delta)
@@ -28,7 +28,7 @@ def measure_performance(db_file, output_file, test_set_size=LOADS, verbose=False
                 print color(suggestion, state)
             is_solved = solved(state)
             round += 1
-            if round > 19:
+            if round == MAX_ROUNDS:
                 print 'infinite loop for', word
                 break
         rounds_required.append(round)
